@@ -1,1 +1,1 @@
-bot: ls ./target/release/
+bot: ./target/release/rust_hour_calc
