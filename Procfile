@@ -1,1 +1,1 @@
-bot: ls target/debug/
+bot: ./target
