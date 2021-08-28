@@ -1,1 +1,1 @@
-bot: ./target
+bot: ls ./target
