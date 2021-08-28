@@ -1,1 +1,1 @@
-bot: cargo run
+bot: ./target/release/rust_hour_calc
