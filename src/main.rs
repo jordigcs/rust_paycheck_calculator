@@ -10,6 +10,7 @@ use serenity::framework::standard::{
         group
     }
 };
+use std::env;
 
 #[group]
 #[commands(hours)]
@@ -27,7 +28,7 @@ async fn main() {
         .group(&GENERAL_GROUP);
 
     // Login with a bot token from the environment
-    let token = "TOKEN HERE";
+    let token = env::var("DISCORD_TOKEN").expect("token");
     let mut client = Client::builder(token)
         .event_handler(Handler)
         .framework(framework)
