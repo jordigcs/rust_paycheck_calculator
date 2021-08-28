@@ -1,1 +1,1 @@
-bot: ls ./target/release/rust_hour_calc
+bot: cargo run
