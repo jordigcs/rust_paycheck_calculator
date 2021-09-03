@@ -114,7 +114,17 @@ async fn hours(ctx: &Context, msg: &Message) -> CommandResult {
                 println!("Error sending message: {:?}", why);
             }
             else {
-                orig_msg.reply(ctx, "Result Sent! Check DMs! :D").await?;
+                orig_msg.channel_id.send_message(&ctx.http, |m| {
+                    m.embed(|e| {
+                        e.title("Hour + Pay Calculator");
+                        e.color(*colors.choose(&mut rand::thread_rng()).unwrap());
+                        e.description("Results sent! Check DMs :D");
+
+                        e
+                    });
+                    m
+                })
+                .await?;
             }
         }
     else {
