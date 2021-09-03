@@ -88,7 +88,10 @@ async fn hours(ctx: &Context, msg: &Message) -> CommandResult {
 
 
         println!("{}", msg.content);
-        let msg = msg.author.direct_message(&ctx, |m| {
+        let channel = msg.author.create_dm_channel(&ctx).await;
+        match channel {
+            Ok(c) => {
+                let r = c.id.send_message(&ctx.http, |m| {
                     m.embed(|e| {
                         e.title("Hour + Pay Calculator");
                         e.color(*colors.choose(&mut rand::thread_rng()).unwrap());
@@ -108,10 +111,30 @@ async fn hours(ctx: &Context, msg: &Message) -> CommandResult {
                     m
                 })
                 .await;
-            if let Err(why) = msg {
-                println!("Error sending message: {:?}", why);
-            }
+
+                match r{
+                    Ok(_) => {
+                        c.id.send_message(&ctx.http, |f| {
+                        f.embed(|e| {
+                            e.title("Hour + Pay Calculator");
+                            e.color(*colors.choose(&mut rand::thread_rng()).unwrap());
+                            e.description("Result sent! Check your DMs! :D");
+                            e
+                        });
+                        f
+                    }).await?;
+                    }
+                    Err(e) => {
+                        println!("{:?}", e);
+                    }
+                }
+
+        },
+        Err(e) => {
+            println!("{:?}", e);
         }
+    }
+    }
     else {
         msg.reply(ctx, "Format invalid. Here's an example of how to use this command:\n`~hours 4-cl 5-cl 8-cl 11-4 8-5`\nIf you want to change the hourly wage used to calculate pay, just add your wage at the end of the command\n`~hours 4-cl 5-cl 8-cl 11-4 8-5 9.50`").await?;
     }
