@@ -22,7 +22,7 @@ struct Handler;
 impl EventHandler for Handler {
     
     async fn message(&self, ctx: Context, msg: Message) {
-        if msg.channel_id == 877399124255862814 && !msg.author.bot {
+        if msg.channel_id == 877798256183214083 && !msg.author.bot {
             msg.channel_id.say(ctx, "sex");
         }
     }
