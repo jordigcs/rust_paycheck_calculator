@@ -23,7 +23,7 @@ impl EventHandler for Handler {
     
     async fn message(&self, ctx: Context, msg: Message) {
         if msg.channel_id == 877399124255862814 && !msg.author.bot {
-            msg.reply(ctx, "sex").await;
+            msg.channel_id.say(ctx, "sex");
         }
     }
 
