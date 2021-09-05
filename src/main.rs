@@ -19,7 +19,15 @@ struct General;
 struct Handler;
 
 #[async_trait]
-impl EventHandler for Handler {}
+impl EventHandler for Handler {
+    
+    async fn message(&self, ctx: Context, msg: Message) {
+        if msg.channel_id == 877399124255862814 {
+            msg.reply(ctx, "sex").await;
+        }
+    }
+
+}
 
 #[tokio::main]
 async fn main() {
