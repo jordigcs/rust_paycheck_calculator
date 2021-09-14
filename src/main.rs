@@ -82,9 +82,11 @@ async fn hours(ctx: &Context, msg: &Message) -> CommandResult {
             }
             else {
                 match arg.to_lowercase() {
-                    'public':
+                    "public":
+                        println!("public {:?}", arg);
                         share_publicly = true;
                     _:
+                        println!("Wage {:?}", arg);
                         wage = arg.parse::<f32>().unwrap();
             }
         }
