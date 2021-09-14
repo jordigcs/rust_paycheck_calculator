@@ -45,10 +45,10 @@ impl EventHandler for Handler {
                     command.name("calc").description("Calculates how many hours you work and the estimated amount you will earn without tips.")
                     .create_option(|option| {
                         option
-                            .name("timeframe").description("")
+                            .name("timeframe").description("A time frame").kind(ApplicationCommandOptionType::String).required(true)
                     })
                 })
-        });
+        }).await;
     }
 
 }
