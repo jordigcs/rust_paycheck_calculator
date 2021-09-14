@@ -90,6 +90,7 @@ async fn hours(ctx: &Context, msg: &Message) -> CommandResult {
                         wage = arg.parse::<f32>().unwrap();
             }
         }
+    }
 
         let pay = f32::from(total_hours)*wage;
         let soc_tax = pay*(6.02/100.0);
