@@ -22,9 +22,7 @@ struct Handler;
 impl EventHandler for Handler {
     
     async fn message(&self, ctx: Context, msg: Message) {
-        if msg.channel_id == 877798256183214083 && !msg.author.bot {
-            msg.channel_id.say(ctx, "sex");
-        }
+
     }
 
 }
@@ -57,6 +55,7 @@ async fn hours(ctx: &Context, msg: &Message) -> CommandResult {
 
         let mut total_hours: i8 = 0;
         let mut wage:f32 = 8.5;
+        let share_publicly:bool = false;
         for arg in args.iter() {
             if arg.contains('-') {
                 let mut time_interval_str : Vec<&str> = arg.split("-").collect();
@@ -82,21 +81,29 @@ async fn hours(ctx: &Context, msg: &Message) -> CommandResult {
                 }
             }
             else {
-                wage = arg.parse::<f32>().unwrap();
+                match arg.to_lowercase() {
+                    'public':
+                        share_publicly = true;
+                    _:
+                        wage = arg.parse::<f32>().unwrap();
             }
         }
 
         let pay = f32::from(total_hours)*wage;
         let soc_tax = pay*(6.02/100.0);
         let med_tax = pay*(1.45/100.0);
-        let fed_tax = 10.00;
         //println!("Total Hours: {:.1}\nHourly Pay: {:.2}\nTotal Pay without taxes: {:.2}\n_____________\nSocial Security Tax: {:.2}\nMedicare Tax: {:.2}\nFederal Witholding: {:.2}\nFinal Total: {:.2}", total_hours, wage, pay, soc_tax, med_tax, fed_tax, pay-fed_tax-soc_tax-med_tax);
 
         let colors : Vec<i32> = vec![0x008C15, 0xFFC600];
 
-        let dm = msg.author.create_dm_channel(ctx).await?;
         let orig_msg = msg;
-        let msg2 = dm.id
+        let id;
+        if !send_publicly:
+            let dm = msg.author.create_dm_channel(ctx).await?;
+            id = dm.id;
+        else:
+            id = msg.channel_id;
+        let msg2 = id
                 .send_message(&ctx.http, |m| {
                     m.embed(|e| {
                         e.title("Hour + Pay Calculator");
@@ -104,7 +111,7 @@ async fn hours(ctx: &Context, msg: &Message) -> CommandResult {
                         e.description("Calculates how many hours you work and around how much you will make without tips.");
                         e.fields(vec![
                             ("Gross Pay", format!("Total Hours: {:.1}\nHourly Pay: {:.2}\nTotal Pay without taxes: {:.2}", total_hours, wage, pay), true),
-                            ("Net Pay", format!("Social Security Tax: {:.2}\nMedicare Tax: {:.2}\nFederal Witholding: {:.2}\n**Final Total: {:.2}**", soc_tax, med_tax, fed_tax, pay-fed_tax-soc_tax-med_tax), true),
+                            ("Net Pay", format!("Social Security Tax: {:.2}\nMedicare Tax: {:.2}\n**Final Total: {:.2}**", soc_tax, med_tax, pay-soc_tax-med_tax), true),
                         ]);
                         e.footer(|f| {
                             f.text("a small little coding project by Jordi :)");
@@ -122,6 +129,7 @@ async fn hours(ctx: &Context, msg: &Message) -> CommandResult {
                 println!("Error sending message: {:?}", why);
             }
             else {
+                if !send_publicly {
                 orig_msg.channel_id.send_message(&ctx.http, |m| {
                     m.embed(|e| {
                         e.title("Hour + Pay Calculator");
@@ -133,6 +141,7 @@ async fn hours(ctx: &Context, msg: &Message) -> CommandResult {
                     m
                 })
                 .await?;
+            }
             }
         }
     else {
