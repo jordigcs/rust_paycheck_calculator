@@ -2,6 +2,19 @@ use rand::seq::SliceRandom;
 use serenity::async_trait;
 use serenity::client::{Client, Context, EventHandler};
 use serenity::model::channel::Message;
+use serenity::{
+    model::{
+        interactions::{
+            application_command::{
+                ApplicationCommand,
+                ApplicationCommandInteractionDataOptionValue,
+                ApplicationCommandOptionType
+            },
+            Interaction,
+            InteractionResponseType
+        }
+    }
+}
 use serenity::framework::standard::{
     StandardFramework,
     CommandResult,
@@ -23,6 +36,19 @@ impl EventHandler for Handler {
     
     async fn message(&self, ctx: Context, msg: Message) {
 
+    }
+
+    async fn ready(&self, ctx: Context, ready: Ready) {
+        let commands = ApplicationCommand::set_global_application_commands(&ctx.http, |commands| {
+            commands
+                .create_application_command(|command| {
+                    command.name("calc").description("Calculates how many hours you work and the estimated amount you will earn without tips.")
+                    .create_option(|option| {
+                        option
+                            .name("timeframe").description("")
+                    })
+                })
+        });
     }
 
 }
