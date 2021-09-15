@@ -55,7 +55,7 @@ async fn hours(ctx: &Context, msg: &Message) -> CommandResult {
 
         let mut total_hours: i8 = 0;
         let mut wage:f32 = 8.5;
-        let share_publicly:bool = false;
+        let mut share_publicly:bool = false;
         for arg in args.iter() {
             if arg.contains('-') {
                 let mut time_interval_str : Vec<&str> = arg.split("-").collect();
@@ -81,16 +81,18 @@ async fn hours(ctx: &Context, msg: &Message) -> CommandResult {
                 }
             }
             else {
-                match arg.to_lowercase() {
-                    "public":
+                match arg.to_lowercase().as_str() {
+                    "public" => {
                         println!("public {:?}", arg);
                         share_publicly = true;
-                    _:
+                    }
+                    _ => {
                         println!("Wage {:?}", arg);
                         wage = arg.parse::<f32>().unwrap();
+                    }
+                }
             }
         }
-    }
 
         let pay = f32::from(total_hours)*wage;
         let soc_tax = pay*(6.02/100.0);
@@ -101,11 +103,13 @@ async fn hours(ctx: &Context, msg: &Message) -> CommandResult {
 
         let orig_msg = msg;
         let id;
-        if !send_publicly:
+        if !share_publicly {
             let dm = msg.author.create_dm_channel(ctx).await?;
             id = dm.id;
-        else:
+        }
+        else {
             id = msg.channel_id;
+        }
         let msg2 = id
                 .send_message(&ctx.http, |m| {
                     m.embed(|e| {
@@ -132,7 +136,7 @@ async fn hours(ctx: &Context, msg: &Message) -> CommandResult {
                 println!("Error sending message: {:?}", why);
             }
             else {
-                if !send_publicly {
+                if !share_publicly {
                 orig_msg.channel_id.send_message(&ctx.http, |m| {
                     m.embed(|e| {
                         e.title("Hour + Pay Calculator");
