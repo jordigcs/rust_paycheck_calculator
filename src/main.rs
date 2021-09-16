@@ -15,7 +15,7 @@ use std::env;
 #[group]
 #[commands(hours)]
 #[commands(clear)]
-#[commands(calc_tax)]
+// #[commands(calc_tax)]
 struct General;
 
 struct Handler;
@@ -49,10 +49,38 @@ async fn main() {
     }
 }
 
-#[command]
-async fn calc_tax(ctx: &Context, msg: &Message) -> CommandResult {
-    return
-}
+// #[command]
+// async fn calc_tax(ctx: &Context, msg: &Message) -> CommandResult {
+//     let mut args: Vec<&str> = msg.content.split(" ").collect();
+//     if args.len() > 1 {
+//         args.remove(0);
+//         let amount:f32 = 0;
+
+//         let mut is_numeric:bool = true;
+//         for i in args[0].chars() {
+//             if !i.is_numeric() {
+//                 is_numeric = false;
+//             }
+//         }
+
+//         if !is_numeric {
+//             msg.channel_id.send_message(&ctx.http, |m| {
+//                 m.content("Value provided is not a number! Provide an amount to calculate taxes on.");
+//                 m
+//             }).await;
+//             return
+//         }
+//         else {
+//             amount = args[0].parse::<f32>().unwrap()
+//         }
+//         msg.channel_id.send_message(&ctx.http, |m| {
+//             let soc_tax = amount*(6.02/100.0);
+//             let med_tax = amount*(1.45/100.0);
+//             m.content(format!("Social Security Tax: {:?}\nMedicare Tax: {:?}\nRemaning amount: {:?}", soc_tax, med_tax, amount-soc_tax-med_tax));
+//             m
+//         }).await;
+//     }
+// }
 
 #[command]
 async fn clear(ctx: &Context, msg: &Message) -> CommandResult {
@@ -85,7 +113,7 @@ async fn clear(ctx: &Context, msg: &Message) -> CommandResult {
             messages
         }).await;
         msg.channel_id.send_message(&ctx.http, |m| {
-            m.content(format!("Deleted {?:} messages.", amount_to_clear));
+            m.content(format!("Deleted {:?} messages.", amount_to_clear));
             m
         }).await;
     }
