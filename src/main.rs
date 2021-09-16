@@ -50,6 +50,11 @@ async fn main() {
 }
 
 #[command]
+async fn calc_tax(ctx: &Context, msg: &Message) -> CommandResult {
+    return
+}
+
+#[command]
 async fn clear(ctx: &Context, msg: &Message) -> CommandResult {
     let mut args: Vec<&str> = msg.content.split(" ").collect();
     if args.len() > 1 {
