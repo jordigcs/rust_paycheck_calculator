@@ -107,9 +107,10 @@ async fn clear(ctx: &Context, msg: &Message) -> CommandResult {
             amount_to_clear = args[0].parse::<i8>().unwrap()
         }
         msg.channel_id.messages(ctx, |messages| {
-            for i in 0..amount_to_clear {
-                msg.channel_id.delete_message(ctx, messages[i]);
-            }
+            println!("{:?}", messages);
+            // for i in 0..amount_to_clear {
+            //     msg.channel_id.delete_message(ctx, messages[i]);
+            // }
             messages
         }).await;
         msg.channel_id.send_message(&ctx.http, |m| {
