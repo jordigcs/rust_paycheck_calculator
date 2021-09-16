@@ -15,6 +15,7 @@ use std::env;
 #[group]
 #[commands(hours)]
 #[commands(clear)]
+#[commands(calc_tax)]
 struct General;
 
 struct Handler;
@@ -79,7 +80,7 @@ async fn clear(ctx: &Context, msg: &Message) -> CommandResult {
             messages
         }).await;
         msg.channel_id.send_message(&ctx.http, |m| {
-            m.content(format!("Deleted {?:} messages.", amount_to_clear);
+            m.content(format!("Deleted {?:} messages.", amount_to_clear));
             m
         }).await;
     }
