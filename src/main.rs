@@ -79,6 +79,7 @@ async fn main() {
 //             m.content(format!("Social Security Tax: {:?}\nMedicare Tax: {:?}\nRemaning amount: {:?}", soc_tax, med_tax, amount-soc_tax-med_tax));
 //             m
 //         }).await;
+//         Ok(())
 //     }
 // }
 
@@ -118,6 +119,7 @@ async fn clear(ctx: &Context, msg: &Message) -> CommandResult {
             m
         }).await;
     }
+    Ok(())
 }
 
 #[command]
