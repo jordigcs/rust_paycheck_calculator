@@ -14,6 +14,7 @@ use std::env;
 
 #[group]
 #[commands(hours)]
+#[commands(clear)]
 struct General;
 
 struct Handler;
@@ -44,6 +45,43 @@ async fn main() {
     // start listening for events by starting a single shard
     if let Err(why) = client.start().await {
         println!("An error occurred while running the client: {:?}", why);
+    }
+}
+
+#[command]
+async fn clear(ctx: &Context, msg: &Message) -> CommandResult {
+    let mut args: Vec<&str> = msg.content.split(" ").collect();
+    if args.len() > 1 {
+        args.remove(0);
+        let amount_to_clear:i8 = 0;
+
+        let mut is_numeric:bool = true;
+        for i in args[0].chars() {
+            if !i.is_numeric() {
+                is_numeric = false;
+            }
+        }
+
+        if !is_numeric {
+            msg.channel_id.send_message(&ctx.http, |m| {
+                m.content("Value provided is not a number! Provide a number for messages to delete.");
+                m
+            }).await;
+            return
+        }
+        else {
+            amount_to_clear = args[0].parse::<i8>().unwrap()
+        }
+        msg.channel_id.messages(ctx, |messages| {
+            for i in 0..amount_to_clear {
+                msg.channel_id.delete_message(ctx, messages[i]);
+            }
+            messages
+        }).await;
+        msg.channel_id.send_message(&ctx.http, |m| {
+            m.content(format!("Deleted {?:} messages.", amount_to_clear);
+            m
+        }).await;
     }
 }
 
