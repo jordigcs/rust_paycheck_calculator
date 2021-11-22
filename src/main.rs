@@ -14,7 +14,6 @@ use std::env;
 
 #[group]
 #[commands(hours)]
-#[commands(clear)]
 // #[commands(calc_tax)]
 struct General;
 
@@ -84,45 +83,6 @@ async fn main() {
 // }
 
 #[command]
-async fn clear(ctx: &Context, msg: &Message) -> CommandResult {
-    let mut args: Vec<&str> = msg.content.split(" ").collect();
-    if args.len() > 1 {
-        args.remove(0);
-        let amount_to_clear:i8 = 0;
-
-        let mut is_numeric:bool = true;
-        for i in args[0].chars() {
-            if !i.is_numeric() {
-                is_numeric = false;
-            }
-        }
-
-        if !is_numeric {
-            msg.channel_id.send_message(&ctx.http, |m| {
-                m.content("Value provided is not a number! Provide a number for messages to delete.");
-                m
-            }).await;
-            return
-        }
-        else {
-            amount_to_clear = args[0].parse::<i8>().unwrap()
-        }
-        msg.channel_id.messages(ctx, |messages| {
-            println!("{:?}", messages);
-            // for i in 0..amount_to_clear {
-            //     msg.channel_id.delete_message(ctx, messages[i]);
-            // }
-            messages
-        }).await;
-        msg.channel_id.send_message(&ctx.http, |m| {
-            m.content(format!("Deleted {:?} messages.", amount_to_clear));
-            m
-        }).await;
-    }
-    Ok(())
-}
-
-#[command]
 async fn hours(ctx: &Context, msg: &Message) -> CommandResult {
     let mut args: Vec<&str> = msg.content.split(" ").collect();
     if args.len() > 1 {
@@ -131,39 +91,65 @@ async fn hours(ctx: &Context, msg: &Message) -> CommandResult {
         let mut total_hours: i8 = 0;
         let mut wage:f32 = 8.5;
         let mut share_publicly:bool = false;
-        for arg in args.iter() {
-            if arg.contains('-') {
-                let mut time_interval_str : Vec<&str> = arg.split("-").collect();
+        let mut mode:i8 = 0;
+        if !args[0].contains('-') {
+            mode = 1;
+        }
+        if mode == 0 {
+            for arg in args.iter() {
+                if arg.contains('-') {
+                    let mut time_interval_str : Vec<&str> = arg.split("-").collect();
 
-                let mut time_interval_int : Vec<i8> = vec!();
-        
-                if time_interval_str.len() > 1 {
-                    if time_interval_str[1].to_lowercase() == "cl" {
-                        time_interval_str[1] = "10";
+                    let mut time_interval_int : Vec<i8> = vec!();
+            
+                    if time_interval_str.len() > 1 {
+                        if time_interval_str[1].to_lowercase() == "cl" {
+                            time_interval_str[1] = "10";
+                        }
+                    }
+
+                    for (ind, _value) in time_interval_str.iter().enumerate() {
+                        let num : i8 = time_interval_str[ind].parse().unwrap();
+                        time_interval_int.push(num);
+                    }
+
+                    if time_interval_int[1] <= time_interval_int[0] {
+                        total_hours += (12-time_interval_int[0]) + time_interval_int[1];
+                    }
+                    else {
+                        total_hours += time_interval_int[1] - time_interval_int[0];
                     }
                 }
-
-                for (ind, _value) in time_interval_str.iter().enumerate() {
-                    let num : i8 = time_interval_str[ind].parse().unwrap();
-                    time_interval_int.push(num);
-                }
-
-                if time_interval_int[1] <= time_interval_int[0] {
-                    total_hours += (12-time_interval_int[0]) + time_interval_int[1];
-                }
                 else {
-                    total_hours += time_interval_int[1] - time_interval_int[0];
+                    match arg.to_lowercase().as_str() {
+                        "public" => {
+                            println!("public {:?}", arg);
+                            share_publicly = true;
+                        }
+                        _ => {
+                            println!("Wage {:?}", arg);
+                            wage = arg.parse::<f32>().unwrap();
+                        }
+                    }
                 }
             }
-            else {
-                match arg.to_lowercase().as_str() {
+        }
+        else {
+            for i in 0..args.len() {
+                match args[i].to_lowercase().as_str() {
                     "public" => {
-                        println!("public {:?}", arg);
+                        println!("public {:?}", args[i]);
                         share_publicly = true;
                     }
                     _ => {
-                        println!("Wage {:?}", arg);
-                        wage = arg.parse::<f32>().unwrap();
+                        if i == 0 {
+                            println!("Hours {:?}", args[i]);
+                            total_hours = args[i].parse::<i8>().unwrap();
+                        }
+                        else {
+                            println!("Wage {:?}", args[i]);
+                            wage = args[i].parse::<f32>().unwrap();
+                        }
                     }
                 }
             }
